@@ -14,8 +14,6 @@ class PythonAnyewhereSocket(object):
         socket = await websockets.connect('wss://consoles-3.pythonanywhere.com/sj/577/ymljyhge/websocket')
         wrapper = PythonAnyewhereSocket(socket, session_id, console_id)
         await wrapper.authonticate()
-        # TODO: find window size automatically
-        await wrapper.change_window_size(34, 149)
         return wrapper
 
     def __init__(self, socket, session_id, console_id):
@@ -58,4 +56,4 @@ class PythonAnyewhereSocket(object):
         await self.send(r'\u001b[{};{};;a'.format(self.session_id, self.console_id))
 
     async def change_window_size(self, width, height):
-        await self.send(r'\u001b[8;{};{}t'.format(width, height))
+        await self.send(r'\u001b[8;{};{}t'.format(height, width))

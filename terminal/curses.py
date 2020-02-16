@@ -8,13 +8,16 @@ class WindowedTerminal(object):
         self.stdscr.nodelay(True)
         curses.noecho()
         curses.cbreak()
-        # height, width = stdscr.getmaxyx()
 
     def close(self):
         self.stdscr.clear()
         curses.echo()
         curses.nocbreak()
         curses.endwin()
+
+    def get_window_size(self):
+        h, w = self.stdscr.getmaxyx()
+        return w, h
 
     def read_char(self):
         char = self.stdscr.getch()

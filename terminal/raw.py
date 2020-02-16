@@ -2,6 +2,8 @@ import sys
 import select
 import tty
 import termios
+import fcntl
+import struct
 
 
 class RawTerminal(object):
@@ -11,6 +13,11 @@ class RawTerminal(object):
 
     def close(self):
         termios.tcsetattr(sys.stdin, termios.TCSADRAIN, self.old_settings)
+
+    @staticmethod
+    def get_window_size():
+        h, w, hp, wp = struct.unpack('HHHH', fcntl.ioctl(0, termios.TIOCGWINSZ, struct.pack('HHHH', 0, 0, 0, 0)))
+        return w, h
 
     @staticmethod
     def read_char():

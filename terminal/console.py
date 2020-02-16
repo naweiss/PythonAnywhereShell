@@ -11,6 +11,19 @@ class PythonAnywhereConsole(object):
     def __init__(self, terminal, socket):
         self.terminal = terminal
         self.socket = socket
+        self.window_size = None
+
+    async def change_window_size_loop(self):
+        try:
+            while self.socket.is_connected():
+                window_size = self.terminal.get_window_size()
+                if window_size != self.window_size:
+                    width, height = window_size
+                    await self.socket.change_window_size(width, height)
+                    self.window_size = window_size
+                await asyncio.sleep(0)
+        except:
+            await self.socket.close()
 
     async def read_loop(self):
         try:

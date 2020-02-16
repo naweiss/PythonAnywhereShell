@@ -26,7 +26,8 @@ async def login(session_id, console_id, is_windowed=False):
     try:
         await asyncio.gather(
             asyncio.ensure_future(console.write_loop()),
-            asyncio.ensure_future(console.read_loop())
+            asyncio.ensure_future(console.read_loop()),
+            asyncio.ensure_future(console.change_window_size_loop()),
         )
     finally:
         terminal.close()
