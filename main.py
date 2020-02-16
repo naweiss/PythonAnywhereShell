@@ -1,5 +1,5 @@
 import asyncio
-import configargparse
+import argparse
 import logging
 
 from connection.socket import PythonAnyewhereSocket
@@ -33,7 +33,7 @@ async def login(session_id, console_id, is_windowed=False):
 
 
 def parse_arguments():
-    parser = configargparse.ArgParser(description='Open a remote console on pythonanywhere account.')
+    parser = argparse.ArgumentParser(description='Open a remote console on pythonanywhere account.')
     parser.add_argument('--username', help='account username', required=True)
     parser.add_argument('--password', help='account password', required=True)
     parser.add_argument('--windowed', action='store_true', default=False)
