@@ -20,10 +20,8 @@ class PythonAnywhereConsole(object):
                     logger.debug('Key down: {}'.format(ord(char)))
                     if char == '\x7f':
                         await self.socket.send(char)
-                    elif char == '\x1B':
-                        await self.socket.send(r'\u001b')
                     else:
-                        await self.socket.send(UnicodeCodec.encode(char))
+                        await self.socket.send(UnicodeCodec.encode(char).replace(r'\x', r'\u00'))
                 await asyncio.sleep(0)
         except:
             await self.socket.close()
