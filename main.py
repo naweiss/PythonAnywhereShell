@@ -8,36 +8,36 @@ from terminal.console import PythonAnywhereConsole
 from terminal.curses import WindowedTerminal
 from terminal.raw import RawTerminal
 
-logger = logging.getLogger()
-logger.addHandler(logging.FileHandler('myapp.log'))
-logger.setLevel(logging.INFO)
+
+def init_logger(verbose=False):
+    logging_level = logging.DEBUG if verbose else logging.INFO
+    logging.basicConfig(
+        filename='pythonanywhere.log',
+        filemode='a',
+        format='%(asctime)s %(levelname)s: %(message)s',
+        datefmt='%H:%M:%S',
+        level=logging_level
+    )
 
 
-async def login(session_id, console_id, is_windowed=False):
-    logger.info('Connecting to console {}'.format(console_id))
+async def open_terminal(session_id, console_id, is_windowed=False):
     socket = await PythonAnyewhereSocket.connect(session_id, console_id)
 
-    if is_windowed:
-        terminal = WindowedTerminal()
-    else:
-        terminal = RawTerminal()
-
+    terminal = WindowedTerminal() if is_windowed else RawTerminal()
     console = PythonAnywhereConsole(terminal, socket)
-    try:
-        await asyncio.gather(
-            asyncio.ensure_future(console.write_loop()),
-            asyncio.ensure_future(console.read_loop()),
-            asyncio.ensure_future(console.change_window_size_loop()),
-        )
-    finally:
-        terminal.close()
+    await asyncio.gather(
+        asyncio.ensure_future(console.write_loop()),
+        asyncio.ensure_future(console.read_loop()),
+        asyncio.ensure_future(console.change_window_size_loop()),
+    )
 
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Open a remote console on pythonanywhere account.')
     parser.add_argument('--username', help='account username', required=True)
     parser.add_argument('--password', help='account password', required=True)
-    parser.add_argument('--windowed', action='store_true', default=False)
+    parser.add_argument('--windowed', help='run using curses', action='store_true', default=False)
+    parser.add_argument('-v', dest='verbose', help='verbose logging', action='store_true', default=False)
 
     return parser.parse_args()
 
@@ -45,6 +45,7 @@ def parse_arguments():
 def main():
     arguments = parse_arguments()
 
+    init_logger(arguments.verbose)
     session = PythonAnywhereSession(arguments.username, arguments.password)
     session.login()
 
@@ -55,13 +56,14 @@ def main():
     index = int(input('Please select a console number: '))
     if index < len(consoles):
         loop = asyncio.get_event_loop()
-        task = login(session_id=session.get_cookie('sessionid'),
-                     console_id=consoles[index]['id'],
-                     is_windowed=arguments.windowed)
+        task = open_terminal(session_id=session.get_cookie('sessionid'),
+                             console_id=consoles[index]['id'],
+                             is_windowed=arguments.windowed)
         try:
             loop.run_until_complete(task)
-        except:
+        finally:
             task.close()
+            loop.stop()
 
 
 if __name__ == "__main__":

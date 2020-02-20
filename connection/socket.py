@@ -6,6 +6,17 @@ from websockets.exceptions import ConnectionClosed
 logger = logging.getLogger(__name__)
 
 
+def close_on_error(function):
+    async def wrapper(self, *args, **kwargs):
+        try:
+            return await function(self, *args, **kwargs)
+        except ConnectionClosed:
+            logger.warning('Error while in {}, closing connection'.format(function.__name__))
+            await self.close()
+
+    return wrapper
+
+
 class PythonAnyewhereSocket(object):
     @staticmethod
     async def connect(session_id, console_id):
@@ -28,26 +39,19 @@ class PythonAnyewhereSocket(object):
             self.connected = False
             await self.socket.close()
 
+    @close_on_error
     async def send(self, data):
-        try:
-            data = '["{}"]'.format(data)
-            logger.debug('Sending: {}'.format(data))
-            await self.socket.send(data)
-        except ConnectionClosed:
-            logger.warning('Socket closed while sending')
-            await self.close()
+        data = '["{}"]'.format(data)
+        logger.debug('Sending: {}'.format(data))
+        await self.socket.send(data)
 
+    @close_on_error
     async def recv(self):
-        try:
-            data = await self.socket.recv()
-            logger.debug('Received: {}'.format(data))
-            prefix, suffix = 'a["', '"]'
-            if data.startswith(prefix) and data.endswith(suffix):
-                return data[len(prefix): -len(suffix)]
-        except ConnectionClosed:
-            logger.warning('Socket closed while receiving')
-            await self.close()
-        return ''
+        data = await self.socket.recv()
+        logger.debug('Received: {}'.format(data))
+        prefix, suffix = 'a["', '"]'
+        if data.startswith(prefix) and data.endswith(suffix):
+            return data[len(prefix): -len(suffix)]
 
     def is_connected(self):
         return self.connected
