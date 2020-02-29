@@ -15,7 +15,8 @@ class PythonAnywhereConsole(object):
 
     async def close(self):
         self.terminal.close()
-        await self.socket.close()
+        if self.socket.is_connected():
+            await self.socket.close()
 
     @close_on_error
     async def change_window_size_loop(self):

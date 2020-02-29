@@ -1,8 +1,6 @@
 import websockets
 import logging
 
-from async_utils import close_on_error
-
 logger = logging.getLogger(__name__)
 
 
@@ -28,13 +26,11 @@ class PythonAnyewhereSocket(object):
             self.connected = False
             await self.socket.close()
 
-    @close_on_error
     async def send(self, data):
         data = '["{}"]'.format(data)
         logger.debug('Sending: {}'.format(data))
         await self.socket.send(data)
 
-    @close_on_error
     async def recv(self):
         data = await self.socket.recv()
         logger.debug('Received: {}'.format(data))

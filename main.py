@@ -9,7 +9,7 @@ def init_logger(verbose=False):
         filename='PythonAnywhere.log',
         filemode='a',
         format='%(asctime)s %(levelname)s: %(message)s',
-        datefmt='%H:%M:%S',
+        datefmt='%Y-%m-%d %H:%M:%S',
         level=logging.DEBUG if verbose else logging.INFO
     )
 
