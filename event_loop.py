@@ -27,24 +27,21 @@ async def _open_connection(session_id, console_id, is_windowed=False):
         logger.warning('Canceled main loop')
 
 
-def start_terminal(username, password, is_windowed=False):
-    session = PythonAnywhereSession(username=username, password=password)
-    session.login()
-
-    consoles = session.list_consoles()
+def get_console_id(consoles):
     for index, console in enumerate(consoles):
         print('{}. {}'.format(index, console['name']))
 
     index = int(input('Please select a console number: '))
-    if index < len(consoles):
-        loop = asyncio.get_event_loop()
-        main_task = asyncio.ensure_future(_open_connection(session_id=session.get_cookie('sessionid'),
-                                                           console_id=consoles[index]['id'],
-                                                           is_windowed=is_windowed))
-        try:
-            loop.run_until_complete(main_task)
-        except KeyboardInterrupt:
-            logging.warning('Ctrl+c pressed')
-            main_task.cancel()
-        finally:
-            loop.run_until_complete(main_task)
+    return consoles[index]['id']
+
+
+def start_terminal(session_id, console_id, is_windowed=False):
+    loop = asyncio.get_event_loop()
+    main_task = asyncio.ensure_future(_open_connection(session_id, console_id, is_windowed))
+    try:
+        loop.run_until_complete(main_task)
+    except KeyboardInterrupt:
+        logging.warning('Ctrl+c pressed')
+        main_task.cancel()
+    finally:
+        loop.run_until_complete(main_task)
