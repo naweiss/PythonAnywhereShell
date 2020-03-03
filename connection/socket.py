@@ -18,13 +18,10 @@ class PythonAnyewhereSocket(object):
         self.socket = socket
         self.session_id = session_id
         self.console_id = console_id
-        self.connected = True
 
     async def close(self):
-        if self.connected:
-            logger.info('Socket disconnected')
-            self.connected = False
-            await self.socket.close()
+        logger.info('Socket disconnected')
+        await self.socket.close()
 
     async def send(self, data):
         data = '["{}"]'.format(data)
@@ -45,7 +42,7 @@ class PythonAnyewhereSocket(object):
             return data[len(prefix): -len(suffix)]
 
     def is_connected(self):
-        return self.connected
+        return self.socket.open
 
     async def authonticate(self):
         await self.send(r'\u001b[{};{};;a'.format(self.session_id, self.console_id))
