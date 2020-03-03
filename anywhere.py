@@ -43,12 +43,11 @@ def main():
 
     with PythonAnywhereSession(username=arguments.username, password=arguments.password) as session:
         if arguments.command == 'list':
-            for console in session.iter_consoles():
+            for console in session.list_consoles():
                 print('{}# {}: running {}'.format(console['id'], console['name'], console['executable']))
 
         elif arguments.command == 'exec':
-            consoles = session.iter_consoles(where=lambda console: console['executable'] == arguments.executable)
-            console = next(consoles, session.new_console(arguments.executable))
+            console = session.get_console_instance(arguments.executable)
             start_terminal(session_id=session.get_cookie('sessionid'),
                            console_id=console['id'], is_windowed=arguments.windowed)
 

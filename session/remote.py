@@ -45,10 +45,10 @@ class PythonAnywhereSession(object):
         response.raise_for_status()
         logger.info('Logged into pythonanywhere')
 
-    def iter_consoles(self, where=None):
+    def list_consoles(self, where=None):
         response = self.connection.get('/api/v0/user/{}/consoles/'.format(self.username))
         response.raise_for_status()
-        return filter(where, response.json())
+        return response.json()
 
     def new_console(self, executable):
         response = self.connection.get('/user/{}/consoles/{}/new'.format(self.username, executable), headers={
@@ -56,7 +56,15 @@ class PythonAnywhereSession(object):
         })
         response.raise_for_status()
         console_id = os.path.basename(urlsplit(response.url).path.rstrip(os.path.sep))
+        if not console_id.isnumeric():
+            raise RuntimeError('Failed to create a new console')
         return dict(id=console_id, executable=executable, user=self.username, arguments='', working_directory=None)
+
+    def get_console_instance(self, executable):
+        for console in self.list_consoles():
+            if console['executable'] == executable:
+                return console
+        return self.new_console(executable)
 
     def get_cookie(self, cookie_name):
         return self.connection.cookies.get_dict()[cookie_name]
