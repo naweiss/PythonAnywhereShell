@@ -9,7 +9,7 @@ import struct
 class RawTerminal(object):
     def __init__(self):
         self.old_settings = termios.tcgetattr(sys.stdin)
-        tty.setcbreak(sys.stdin)
+        tty.setraw(sys.stdin)
 
     def close(self):
         termios.tcsetattr(sys.stdin, termios.TCSADRAIN, self.old_settings)

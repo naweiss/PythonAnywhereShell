@@ -20,10 +20,7 @@ async def _open_connection(session_id, console_id, is_windowed=False):
         asyncio.ensure_future(console.read_loop()),
         asyncio.ensure_future(console.change_window_size_loop()),
     ]
-    try:
-        await asyncio.gather(*tasks)
-    except asyncio.CancelledError:
-        logger.warning('Canceled main loop')
+    await asyncio.gather(*tasks)
 
 
 def get_console_id(consoles):
@@ -37,10 +34,4 @@ def get_console_id(consoles):
 def start_terminal(session_id, console_id, is_windowed=False):
     loop = asyncio.get_event_loop()
     main_task = asyncio.ensure_future(_open_connection(session_id, console_id, is_windowed))
-    try:
-        loop.run_until_complete(main_task)
-    except KeyboardInterrupt:
-        logging.warning('Ctrl+c pressed')
-        main_task.cancel()
-    finally:
-        loop.run_until_complete(main_task)
+    loop.run_until_complete(main_task)

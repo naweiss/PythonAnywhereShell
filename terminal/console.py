@@ -8,6 +8,8 @@ logger = logging.getLogger(__name__)
 
 
 class PythonAnywhereConsole(object):
+    CTRL_SLASH = '\x1f'
+
     def __init__(self, terminal, socket):
         self.terminal = terminal
         self.socket = socket
@@ -33,11 +35,9 @@ class PythonAnywhereConsole(object):
         while self.socket.is_connected():
             char = self.terminal.read_char()
             if char is not None:
-                logger.debug('Key down: {}'.format(ord(char)))
-                if char == '\x7f':
-                    await self.socket.send(char)
-                else:
-                    await self.socket.send(UnicodeCodec.encode(char).replace(r'\x', r'\u00'))
+                if char == self.CTRL_SLASH:
+                    await self.socket.close()
+                await self.socket.send(UnicodeCodec.encode(char))
             await asyncio.sleep(0)
 
     @close_on_error

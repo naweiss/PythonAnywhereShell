@@ -29,10 +29,16 @@ class PythonAnyewhereSocket(object):
     async def send(self, data):
         data = '["{}"]'.format(data)
         logger.debug('Sending: {}'.format(data))
-        await self.socket.send(data)
+        try:
+            await self.socket.send(data)
+        except websockets.exceptions.ConnectionClosedOK:
+            pass
 
     async def recv(self):
-        data = await self.socket.recv()
+        try:
+            data = await self.socket.recv()
+        except websockets.exceptions.ConnectionClosedOK:
+            return
         logger.debug('Received: {}'.format(data))
         prefix, suffix = 'a["', '"]'
         if data.startswith(prefix) and data.endswith(suffix):

@@ -7,12 +7,12 @@ class WindowedTerminal(object):
         self.stdscr = curses.initscr()
         self.stdscr.nodelay(True)
         curses.noecho()
-        curses.cbreak()
+        curses.raw()
 
     def close(self):
         self.stdscr.clear()
         curses.echo()
-        curses.nocbreak()
+        curses.noraw()
         curses.endwin()
 
     def get_window_size(self):
