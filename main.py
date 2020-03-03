@@ -1,4 +1,5 @@
-import argparse
+#!/usr/bin/env python3
+import configargparse
 import logging
 
 from event_loop import start_terminal
@@ -16,20 +17,22 @@ def init_logger(verbose=False):
 
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(description='Open a remote console on PythonAnywhere account.')
+    parser = configargparse.ArgumentParser(description='Open a remote console on PythonAnywhere account.')
     subparsers = parser.add_subparsers(dest='command')
     subparsers.required = True
 
-    base_parser = argparse.ArgumentParser(add_help=False)
+    base_parser = configargparse.ArgumentParser(add_help=False)
     base_parser.add_argument('--username', help='account username', required=True)
     base_parser.add_argument('--password', help='account password', required=True)
-    base_parser.add_argument('-v', dest='verbose', help='verbose logging', action='store_true', default=False)
+    base_parser.add_argument('-v', '--verbose', dest='verbose', help='verbose logging',
+                             action='store_true', default=False)
+    base_parser.add_argument('-c', '--config', is_config_file=True, help='config file path')
 
-    execution_parser = subparsers.add_parser('exec', parents=[base_parser])
+    execution_parser = subparsers.add_parser('exec', parents=[base_parser], default_config_files=['~/.anywhere.ini'])
     execution_parser.add_argument('--windowed', help='run using curses', action='store_true', default=False)
     execution_parser.add_argument('executable', help='open a new console of the give type', default=None)
 
-    subparsers.add_parser('list', parents=[base_parser])
+    subparsers.add_parser('list', parents=[base_parser], default_config_files=['~/.anywhere.ini'])
 
     return parser.parse_args()
 
