@@ -45,17 +45,18 @@ class PythonAnywhereSession(object):
         response.raise_for_status()
         logger.info('Logged into pythonanywhere')
 
-    def list_consoles(self):
+    def iter_consoles(self, where=None):
         response = self.connection.get('/api/v0/user/{}/consoles/'.format(self.username))
         response.raise_for_status()
-        return response.json()
+        return filter(where, response.json())
 
     def new_console(self, executable):
         response = self.connection.get('/user/{}/consoles/{}/new'.format(self.username, executable), headers={
             'Referer': 'https://www.pythonanywhere.com/user/{}/consoles/'.format(self.username)
         })
         response.raise_for_status()
-        return os.path.basename(urlsplit(response.url).path.rstrip(os.path.sep))
+        console_id = os.path.basename(urlsplit(response.url).path.rstrip(os.path.sep))
+        return dict(id=console_id, executable=executable, user=self.username, arguments='', working_directory=None)
 
     def get_cookie(self, cookie_name):
         return self.connection.cookies.get_dict()[cookie_name]

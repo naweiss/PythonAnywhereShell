@@ -40,19 +40,14 @@ def main():
 
     with PythonAnywhereSession(username=arguments.username, password=arguments.password) as session:
         if arguments.command == 'list':
-            for console in session.list_consoles():
+            for console in session.iter_consoles():
                 print('{}# {}: running {}'.format(console['id'], console['name'], console['executable']))
 
         elif arguments.command == 'exec':
-            for console in session.list_consoles():
-                if console['executable'] == arguments.executable:
-                    console_id = console['id']
-                    break
-            else:
-                console_id = session.new_console(arguments.executable)
-
+            consoles = session.iter_consoles(where=lambda console: console['executable'] == arguments.executable)
+            console = next(consoles, session.new_console(arguments.executable))
             start_terminal(session_id=session.get_cookie('sessionid'),
-                           console_id=console_id, is_windowed=arguments.windowed)
+                           console_id=console['id'], is_windowed=arguments.windowed)
 
 
 if __name__ == "__main__":

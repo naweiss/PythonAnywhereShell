@@ -2,7 +2,6 @@ import asyncio
 import logging
 
 from connection.socket import PythonAnyewhereSocket
-from session.remote import PythonAnywhereSession
 from terminal.console import PythonAnywhereConsole
 from terminal.curses import WindowedTerminal
 from terminal.raw import RawTerminal
