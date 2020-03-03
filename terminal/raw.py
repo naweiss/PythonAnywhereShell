@@ -1,3 +1,4 @@
+import os
 import sys
 import select
 import tty
@@ -20,12 +21,12 @@ class RawTerminal(object):
         return w, h
 
     @staticmethod
-    def read_char():
+    def read():
         read_streams, _, _ = select.select([sys.stdin], [], [], 0)
         if sys.stdin in read_streams:
-            return sys.stdin.read(1)
+            return os.read(sys.stdin.fileno(), 4096).decode('utf-8')
 
     @staticmethod
-    def write_char(char):
-        sys.stdout.write(char)
+    def write(text):
+        sys.stdout.write(text)
         sys.stdout.flush()

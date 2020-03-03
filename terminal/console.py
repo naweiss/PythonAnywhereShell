@@ -33,7 +33,7 @@ class PythonAnywhereConsole(object):
     @close_on_error
     async def read_loop(self):
         while self.socket.is_connected():
-            char = self.terminal.read_char()
+            char = self.terminal.read()
             if char is not None:
                 if char == self.CTRL_SLASH:
                     await self.socket.close()
@@ -45,5 +45,5 @@ class PythonAnywhereConsole(object):
         while self.socket.is_connected():
             data = await self.socket.recv()
             if data is not None:
-                self.terminal.write_char(UnicodeCodec.decode(data))
+                self.terminal.write(UnicodeCodec.decode(data))
             await asyncio.sleep(0)

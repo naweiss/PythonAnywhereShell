@@ -19,12 +19,12 @@ class WindowedTerminal(object):
         h, w = self.stdscr.getmaxyx()
         return w, h
 
-    def read_char(self):
+    def read(self):
         char = self.stdscr.getch()
         if char != curses.ERR:
             return chr(char)
 
     @staticmethod
-    def write_char(char):
-        sys.stdout.write(char)
+    def write(text):
+        sys.stdout.write(text)
         sys.stdout.flush()
