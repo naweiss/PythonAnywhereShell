@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import configargparse
 import logging
+import getpass
 
 from event_loop import start_terminal
 from session.remote import PythonAnywhereSession
@@ -23,14 +24,14 @@ def parse_arguments():
 
     base_parser = configargparse.ArgumentParser(add_help=False)
     base_parser.add_argument('--username', help='account username', required=True)
-    base_parser.add_argument('--password', help='account password', required=True)
+    base_parser.add_argument('--password', help='account password')
     base_parser.add_argument('-v', '--verbose', dest='verbose', help='verbose logging',
                              action='store_true', default=False)
     base_parser.add_argument('-c', '--config', is_config_file=True, help='config file path')
 
     execution_parser = subparsers.add_parser('exec', parents=[base_parser], default_config_files=['~/.anywhere.ini'])
     execution_parser.add_argument('--windowed', help='run using curses', action='store_true', default=False)
-    execution_parser.add_argument('executable', help='open a new console of the give type', default=None)
+    execution_parser.add_argument('executable', help='open a new console of the give type')
 
     subparsers.add_parser('list', parents=[base_parser], default_config_files=['~/.anywhere.ini'])
 
@@ -40,6 +41,9 @@ def parse_arguments():
 def main():
     arguments = parse_arguments()
     init_logger(verbose=arguments.verbose)
+
+    if not arguments.password:
+        arguments.password = getpass.getpass()
 
     with PythonAnywhereSession(username=arguments.username, password=arguments.password) as session:
         if arguments.command == 'list':
