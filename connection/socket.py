@@ -1,15 +1,22 @@
 import websockets
 import logging
+import random
 
 logger = logging.getLogger(__name__)
+
+
+def random_string(length):
+    RANDOM_STRING_CHARS = 'abcdefghijklmnopqrstuvwxyz012345'
+    return ''.join(random.sample(RANDOM_STRING_CHARS, length))
 
 
 class PythonAnyewhereSocket(object):
     @staticmethod
     async def connect(session_id, console_id):
-        # TODO: find wss URL (e.g. consoles-3/consoles-2) based on console type
+        # TODO: find wss URL (e.g. consoles-3/consoles-2) automatically
         logger.info('Opening a new Socket')
-        socket = await websockets.connect('wss://consoles-3.pythonanywhere.com/sj/577/ymljyhge/websocket')
+        server_id, console_session_id = random.randint(0, 999), random_string(8)
+        socket = await websockets.connect('wss://consoles-3.pythonanywhere.com/sj/{}/{}/websocket'.format(server_id, console_session_id))
         wrapper = PythonAnyewhereSocket(socket, session_id, console_id)
         await wrapper.authonticate()
         return wrapper
