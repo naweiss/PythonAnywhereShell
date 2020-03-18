@@ -31,7 +31,7 @@ class PythonAnyewhereSocket(object):
         await self.socket.close()
 
     async def send(self, data):
-        data = '["{}"]'.format(data)
+        data = '["{}"]'.format(data.replace('"', r'\"'))
         logger.debug('Sending: {}'.format(data))
         try:
             await self.socket.send(data)
