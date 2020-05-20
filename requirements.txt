@@ -1,4 +1,0 @@
-configargparse
-requests
-beautifulsoup4
-websockets
