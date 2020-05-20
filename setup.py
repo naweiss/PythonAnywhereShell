@@ -19,7 +19,7 @@ setup(
 
     entry_points = {
         'console_scripts': [
-            'pyanywhere=pythonanywhere_terminal.anywhere:main'
+            'pyanywhere=pythonanywhere_terminal.main:main'
         ],
     }
 )
