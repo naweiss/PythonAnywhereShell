@@ -10,15 +10,15 @@ def random_string(length):
     return ''.join(random.sample(RANDOM_STRING_CHARS, length))
 
 
-class PythonAnyewhereSocket(object):
+class PythonAnyWhereSocket(object):
     @staticmethod
     async def connect(session_id, console_id):
         # TODO: find wss URL (e.g. consoles-3/consoles-2) automatically
         logger.info('Opening a new Socket')
         server_id, console_session_id = random.randint(0, 999), random_string(8)
         socket = await websockets.connect('wss://consoles-3.pythonanywhere.com/sj/{}/{}/websocket'.format(server_id, console_session_id))
-        wrapper = PythonAnyewhereSocket(socket, session_id, console_id)
-        await wrapper.authonticate()
+        wrapper = PythonAnyWhereSocket(socket, session_id, console_id)
+        await wrapper.authenticate()
         return wrapper
 
     def __init__(self, socket, session_id, console_id):
@@ -51,7 +51,7 @@ class PythonAnyewhereSocket(object):
     def is_connected(self):
         return self.socket.open
 
-    async def authonticate(self):
+    async def authenticate(self):
         await self.send(r'\u001b[{};{};;a'.format(self.session_id, self.console_id))
 
     async def change_window_size(self, width, height):

@@ -3,8 +3,10 @@ import configargparse
 import logging
 import getpass
 
-from event_loop import start_terminal
-from session.remote import PythonAnywhereSession
+from pythonanywhere_terminal.event_loop import start_terminal
+from pythonanywhere_terminal.session.remote import PythonAnywhereSession
+
+CONFIG_FILES_PATH = ['./.anywhere.ini', '~/.anywhere.ini']
 
 
 def init_logger(verbose=False):
@@ -29,11 +31,11 @@ def parse_arguments():
                              action='store_true', default=False)
     base_parser.add_argument('-c', '--config', is_config_file=True, help='config file path')
 
-    execution_parser = subparsers.add_parser('exec', parents=[base_parser], default_config_files=['~/.anywhere.ini'])
+    execution_parser = subparsers.add_parser('exec', parents=[base_parser], default_config_files=CONFIG_FILES_PATH)
     execution_parser.add_argument('--windowed', help='run using curses', action='store_true', default=False)
     execution_parser.add_argument('executable', help='open a new console of the give type')
 
-    subparsers.add_parser('list', parents=[base_parser], default_config_files=['~/.anywhere.ini'])
+    subparsers.add_parser('list', parents=[base_parser], default_config_files=CONFIG_FILES_PATH)
 
     return parser.parse_args()
 
