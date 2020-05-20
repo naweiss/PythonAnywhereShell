@@ -3,8 +3,8 @@ import configargparse
 import logging
 import getpass
 
-from event_loop import start_terminal
-from session.remote import PythonAnywhereSession
+from pythonanywhere_terminal.event_loop import start_terminal
+from pythonanywhere_terminal.session.remote import PythonAnywhereSession
 
 CONFIG_FILES_PATH = ['./.anywhere.ini', '~/.anywhere.ini']
 

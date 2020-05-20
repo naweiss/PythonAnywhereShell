@@ -1,16 +1,16 @@
 import asyncio
 import logging
 
-from connection.socket import PythonAnyewhereSocket
-from terminal.console import PythonAnywhereConsole
-from terminal.curses import WindowedTerminal
-from terminal.raw import RawTerminal
+from pythonanywhere_terminal.connection.socket import PythonAnyWhereSocket
+from pythonanywhere_terminal.terminal.console import PythonAnywhereConsole
+from pythonanywhere_terminal.terminal.curses import WindowedTerminal
+from pythonanywhere_terminal.terminal.raw import RawTerminal
 
 logger = logging.getLogger(__name__)
 
 
 async def _open_connection(session_id, console_id, is_windowed=False):
-    socket = await PythonAnyewhereSocket.connect(session_id, console_id)
+    socket = await PythonAnyWhereSocket.connect(session_id, console_id)
 
     terminal = WindowedTerminal() if is_windowed else RawTerminal()
     console = PythonAnywhereConsole(terminal, socket)

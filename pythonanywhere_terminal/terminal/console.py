@@ -1,8 +1,8 @@
 import asyncio
 import logging
 
-from async_utils import close_on_error
-from connection.codec import UnicodeCodec
+from pythonanywhere_terminal.async_utils import close_on_error
+from pythonanywhere_terminal.connection.codec import UnicodeCodec
 
 logger = logging.getLogger(__name__)
 

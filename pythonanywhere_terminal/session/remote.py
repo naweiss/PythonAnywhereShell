@@ -2,7 +2,7 @@ import logging
 import os.path
 import http.client as http_client
 
-from session.utils import LiveSession
+from pythonanywhere_terminal.session.utils import LiveSession
 from bs4 import BeautifulSoup
 from urllib.parse import urlsplit
 
