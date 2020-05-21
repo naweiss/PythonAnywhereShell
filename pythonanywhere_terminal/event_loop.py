@@ -23,14 +23,6 @@ async def _open_connection(session_id, console_id, is_windowed=False):
     await asyncio.gather(*tasks)
 
 
-def get_console_id(consoles):
-    for index, console in enumerate(consoles):
-        print('{}. {}'.format(index, console['name']))
-
-    index = int(input('Please select a console number: '))
-    return consoles[index]['id']
-
-
 def start_terminal(session_id, console_id, is_windowed=False):
     loop = asyncio.get_event_loop()
     main_task = asyncio.ensure_future(_open_connection(session_id, console_id, is_windowed))

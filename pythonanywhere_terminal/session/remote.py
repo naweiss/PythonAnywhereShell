@@ -1,6 +1,5 @@
 import logging
 import os.path
-import http.client as http_client
 
 from pythonanywhere_terminal.session.utils import CSRFLiveSession
 from urllib.parse import urlsplit
@@ -30,10 +29,6 @@ class PythonAnywhereClient(object):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.connection.close()
-
-    @staticmethod
-    def debug():
-        http_client.HTTPConnection.debuglevel = 1
 
     def login(self):
         logger.info('Logging into pythonanywhere...')
