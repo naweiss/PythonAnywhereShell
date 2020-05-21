@@ -2,18 +2,17 @@ import logging
 import os.path
 import http.client as http_client
 
-from pythonanywhere_terminal.session.utils import LiveSession
-from bs4 import BeautifulSoup
+from pythonanywhere_terminal.session.utils import CSRFLiveSession
 from urllib.parse import urlsplit
 
 logger = logging.getLogger(__name__)
 
 
-class PythonAnywhereSession(object):
+class PythonAnywhereClient(object):
     def __init__(self, username, password):
         self.username = username
         self.password = password
-        self.connection = LiveSession('https://www.pythonanywhere.com/')
+        self.connection = CSRFLiveSession('https://www.pythonanywhere.com/', token_name='csrfmiddlewaretoken')
 
     def __enter__(self):
         self.login()
@@ -28,36 +27,31 @@ class PythonAnywhereSession(object):
 
     def login(self):
         logger.info('Logging into pythonanywhere...')
-        response = self.connection.get('/login/')
-        response.raise_for_status()
-        soup = BeautifulSoup(response.text, features="html.parser")
-        csrf_token = soup.find('input', {'name': 'csrfmiddlewaretoken'})['value']
+        self.connection.get('/login/')
 
         payload = {
             'auth-username': self.username,
             'auth-password': self.password,
-            'csrfmiddlewaretoken': csrf_token,
             'login_view-current_step': 'auth'
         }
-        response = self.connection.post('/login/', data=payload, headers={
-            'Referer': 'https://www.pythonanywhere.com/login/',
+        self.connection.post('/login/', data=payload, headers={
+            'Referer': '{}/login/'.format(self.connection.prefix_url),
         })
-        response.raise_for_status()
         logger.info('Logged into pythonanywhere')
 
     def list_consoles(self, where=None):
-        response = self.connection.get('/api/v0/user/{}/consoles/'.format(self.username))
-        response.raise_for_status()
-        return response.json()
+        return self.connection.get('/api/v0/user/{}/consoles/'.format(self.username)).json()
 
     def new_console(self, executable):
         response = self.connection.get('/user/{}/consoles/{}/new'.format(self.username, executable), headers={
-            'Referer': 'https://www.pythonanywhere.com/user/{}/consoles/'.format(self.username)
+            'Referer': '{}/user/{}/consoles/'.format(self.connection.prefix_url, self.username)
         })
-        response.raise_for_status()
-        console_id = os.path.basename(urlsplit(response.url).path.rstrip(os.path.sep))
+
+        console_url = urlsplit(response.url).path.rstrip(os.path.sep)
+        console_id = os.path.basename(console_url)
         if not console_id.isnumeric():
             raise RuntimeError('Failed to create a new console')
+
         return dict(id=console_id, executable=executable, user=self.username, arguments='', working_directory=None)
 
     def get_console_instance(self, executable):

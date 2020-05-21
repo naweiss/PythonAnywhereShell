@@ -17,6 +17,7 @@ class PythonAnyWhereSocket(object):
         logger.info('Opening a new Socket')
         server_id, console_session_id = random.randint(0, 999), random_string(8)
         socket = await websockets.connect('wss://consoles-3.pythonanywhere.com/sj/{}/{}/websocket'.format(server_id, console_session_id))
+
         wrapper = PythonAnyWhereSocket(socket, session_id, console_id)
         await wrapper.authenticate()
         return wrapper
