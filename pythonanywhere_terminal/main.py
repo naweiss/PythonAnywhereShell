@@ -53,9 +53,7 @@ def main():
                 print(str(Console(console_details)))
 
         elif arguments.command == 'exec':
-            console = client.get_console_instance(arguments.executable)
-            start_terminal(session_id=client.get_cookie('sessionid'),
-                           console_id=console['id'], is_windowed=arguments.windowed)
+            start_terminal(client, arguments.executable)
 
 
 if __name__ == "__main__":

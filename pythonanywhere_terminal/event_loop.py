@@ -23,7 +23,11 @@ async def _open_connection(session_id, console_id, is_windowed=False):
     await asyncio.gather(*tasks)
 
 
-def start_terminal(session_id, console_id, is_windowed=False):
+def start_terminal(client, executable, is_windowed=False):
+    console = client.get_console_instance(executable)
+
     loop = asyncio.get_event_loop()
-    main_task = asyncio.ensure_future(_open_connection(session_id, console_id, is_windowed))
+    main_task = asyncio.ensure_future(_open_connection(session_id=client.get_cookie('sessionid'),
+                                                       console_id=console['id'],
+                                                       is_windowed=is_windowed))
     loop.run_until_complete(main_task)
