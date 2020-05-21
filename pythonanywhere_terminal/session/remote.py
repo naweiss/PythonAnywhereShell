@@ -8,11 +8,21 @@ from urllib.parse import urlsplit
 logger = logging.getLogger(__name__)
 
 
+class Console(object):
+    def __init__(self, console_details):
+        self.id = console_details['id']
+        self.name = console_details['name']
+        self.executable = console_details['executable']
+
+    def __str__(self):
+        return '{}# {}: running {}'.format(self.id, self.name, self.executable)
+
+
 class PythonAnywhereClient(object):
     def __init__(self, username, password):
         self.username = username
         self.password = password
-        self.connection = CSRFLiveSession('https://www.pythonanywhere.com/', token_name='csrfmiddlewaretoken')
+        self.connection = CSRFLiveSession('https://www.pythonanywhere.com', token_name='csrfmiddlewaretoken')
 
     def __enter__(self):
         self.login()

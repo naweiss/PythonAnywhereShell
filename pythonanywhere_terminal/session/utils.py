@@ -32,14 +32,14 @@ class CSRFLiveSession(LiveSession):
         data.update({self.token_name: self.token_value})
         return super(CSRFLiveSession, self).post(url, data, json, **kwargs)
 
-    def _set_token(self, text):
+    def _get_token(self, text):
         soup = BeautifulSoup(text, features="html.parser")
-        element = soup.find_all('input', {'name': self.token_name})
-        if len(element):
-            return element[0]['value']
+        elements = soup.find_all('input', {'name': self.token_name})
+        if len(elements):
+            return elements[0]['value']
 
     def get(self, url, **kwargs):
         response = super(CSRFLiveSession, self).get(url, **kwargs)
         if response.ok:
-            self._set_token(response.text)
+            self.token_value = self._get_token(response.text)
         return response

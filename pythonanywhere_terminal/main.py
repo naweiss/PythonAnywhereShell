@@ -4,7 +4,7 @@ import logging
 import getpass
 
 from pythonanywhere_terminal.event_loop import start_terminal
-from pythonanywhere_terminal.session.remote import PythonAnywhereClient
+from pythonanywhere_terminal.session.remote import PythonAnywhereClient, Console
 
 CONFIG_FILES_PATH = ['./.anywhere.ini', '~/.anywhere.ini']
 
@@ -49,8 +49,8 @@ def main():
 
     with PythonAnywhereClient(username=arguments.username, password=arguments.password) as client:
         if arguments.command == 'list':
-            for console in client.list_consoles():
-                print('{}# {}: running {}'.format(console['id'], console['name'], console['executable']))
+            for console_details in client.list_consoles():
+                print(str(Console(console_details)))
 
         elif arguments.command == 'exec':
             console = client.get_console_instance(arguments.executable)
