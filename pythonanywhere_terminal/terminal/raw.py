@@ -2,9 +2,8 @@ import os
 import sys
 import select
 import tty
+import shutil
 import termios
-import fcntl
-import struct
 
 
 class RawTerminal(object):
@@ -17,8 +16,7 @@ class RawTerminal(object):
 
     @staticmethod
     def get_window_size():
-        h, w, hp, wp = struct.unpack('HHHH', fcntl.ioctl(0, termios.TIOCGWINSZ, struct.pack('HHHH', 0, 0, 0, 0)))
-        return w, h
+        return shutil.get_terminal_size()
 
     @staticmethod
     def read():
