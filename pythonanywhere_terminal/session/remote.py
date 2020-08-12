@@ -1,8 +1,6 @@
 import logging
-import os.path
 
 from pythonanywhere_terminal.session.utils import CSRFLiveSession
-from urllib.parse import urlsplit
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +30,7 @@ class PythonAnywhereClient(object):
 
     def login(self):
         logger.info('Logging into pythonanywhere...')
+        # Generate CSRF token
         self.connection.get('/login/')
 
         payload = {
@@ -44,20 +43,22 @@ class PythonAnywhereClient(object):
         })
         logger.info('Logged into pythonanywhere')
 
-    def list_consoles(self, where=None):
+    def list_consoles(self):
         return self.connection.get('/api/v0/user/{}/consoles/'.format(self.username)).json()
 
     def new_console(self, executable):
-        response = self.connection.get('/user/{}/consoles/{}/new'.format(self.username, executable), headers={
+        # Generate CSRF token
+        self.connection.get('/')
+
+        payload = {
+            'executable': executable,
+            'arguments': '',
+            'working_directory': None
+        }
+        response = self.connection.post('/api/v0/user/{}/consoles/'.format(self.username, executable), data=payload, headers={
             'Referer': '{}/user/{}/consoles/'.format(self.connection.prefix_url, self.username)
         })
-
-        console_url = urlsplit(response.url).path.rstrip(os.path.sep)
-        console_id = os.path.basename(console_url)
-        if not console_id.isnumeric():
-            raise RuntimeError('Failed to create a new console')
-
-        return dict(id=console_id, executable=executable, user=self.username, arguments='', working_directory=None)
+        return response.json()
 
     def get_console_instance(self, executable):
         for console in self.list_consoles():
