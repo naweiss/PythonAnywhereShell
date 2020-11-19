@@ -21,7 +21,7 @@ with PythonAnywhereClient(username=arguments.username, password=arguments.passwo
     
     elif arguments.command == 'exec':
         start_terminal(client, arguments.executable)
- ```
+```
 
 ## CLI tool
 
@@ -72,6 +72,8 @@ To open a bash shell run:
 ```
 pyanywhere exec bash
 ```
+
+![exec result](images/exec.png)
 
 You can also run this command with any executable name:
 ```
