@@ -14,6 +14,9 @@ pip install https://github.com/naweiss/PythonAnywhereTerminal.git
 ## Usage
 
 ```python
+from pythonanywhere_terminal.event_loop import start_terminal
+from pythonanywhere_terminal.session.remote import PythonAnywhereClient, Console
+
 with PythonAnywhereClient(username=arguments.username, password=arguments.password) as client:
     if arguments.command == 'list':
         for console_details in client.list_consoles():
