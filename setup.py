@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='pythonanywhere-terminal',
-    version='1.0.1',
+    version='1.1.1',
     description='Python module and command line tool to connect to remote pythonanywhere consoles',
 
     author='Nadav Weiss',
