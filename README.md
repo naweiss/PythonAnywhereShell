@@ -14,6 +14,9 @@ pip install https://github.com/naweiss/PythonAnywhereTerminal.git
 ## Usage
 
 ```python
+from pythonanywhere_terminal.event_loop import start_terminal
+from pythonanywhere_terminal.session.remote import PythonAnywhereClient, Console
+
 with PythonAnywhereClient(username=arguments.username, password=arguments.password) as client:
     if arguments.command == 'list':
         for console_details in client.list_consoles():
@@ -30,10 +33,6 @@ When installing this package a console script called `pyanywhere` will be instal
 ### Usage
 
 ```
-usage: pyanywhere exec [-h] --username USERNAME [--password PASSWORD] [-v]
-                       [-c CONFIG] [--windowed]
-                       executable
-
 usage: pyanywhere list [-h] --username USERNAME [--password PASSWORD] [-v]
                        [-c CONFIG]
 
@@ -50,6 +49,31 @@ optional arguments:
   -v, --verbose         verbose logging
   -c CONFIG, --config CONFIG
                         config file path
+```
+
+```
+usage: pyanywhere exec [-h] --username USERNAME [--password PASSWORD] [-v]
+                       [-c CONFIG] [--windowed] [--auto-close]
+                       executable
+
+Args that start with '--' (eg. --username) can also be set in a config file
+(./.anywhere.ini or ~/.anywhere.ini or specified via -c). Config file syntax
+allows: key=value, flag=true, stuff=[a,b,c] (for details, see syntax at
+https://goo.gl/R74nmi). If an arg is specified in more than one place, then
+commandline values override config file values which override defaults.
+
+positional arguments:
+  executable            open a new console of the give executable
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --username USERNAME   account username
+  --password PASSWORD   account password
+  -v, --verbose         verbose logging
+  -c CONFIG, --config CONFIG
+                        config file path
+  --windowed            run using curses
+  --auto-close          close the console when " Console closed." is received
 ```
 
 ### Configuration

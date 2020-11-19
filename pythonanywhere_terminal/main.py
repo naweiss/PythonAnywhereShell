@@ -33,7 +33,9 @@ def parse_arguments():
 
     execution_parser = subparsers.add_parser('exec', parents=[base_parser], default_config_files=CONFIG_FILES_PATH)
     execution_parser.add_argument('--windowed', help='run using curses', action='store_true', default=False)
-    execution_parser.add_argument('executable', help='open a new console of the give type')
+    execution_parser.add_argument('--auto-close', help='close the console when "\r\nConsole closed." is received',
+                                  action='store_true', default=False)
+    execution_parser.add_argument('executable', help='open a new console of the give executable')
 
     subparsers.add_parser('list', parents=[base_parser], default_config_files=CONFIG_FILES_PATH)
 
@@ -53,7 +55,9 @@ def main():
                 print(str(Console(console_details)))
 
         elif arguments.command == 'exec':
-            start_terminal(client, arguments.executable)
+            start_terminal(client, arguments.executable,
+                           is_windowed=arguments.windowed,
+                           auto_close=arguments.auto_close)
 
 
 if __name__ == "__main__":
